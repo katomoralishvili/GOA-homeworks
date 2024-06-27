@@ -1,0 +1,97 @@
+/*! Tracking cookie management script */
+
+jQuery(document).ready(function () {
+    if (checkCookie("FCA")) {
+        showTrackingCookie();
+        positionMessage();
+        jQuery(window).scroll(function () {
+            positionMessage();
+        });
+        jQuery(window).resize(function () {
+            positionMessage();
+        });
+        jQuery('#readMore').on('click', function () {
+            showTrackingCookieMore();
+            positionMessage();
+            jQuery('html, body').animate({scrollTop: 0}, 'slow');
+        });
+        jQuery('#readLess').on('click', function () {
+            showTrackingCookie();
+            positionMessage();
+        });
+        jQuery("#dismiss").on('click', function () {
+            jQuery("#trackingCookie").remove();
+            jQuery("#trackingCookieMore").remove();
+            setCookie("FCA", "yes", 365);
+        });
+        jQuery('#dismissMore').on('click', function () {
+            jQuery("#trackingCookieMore").remove();
+            setCookie("FCA", "yes", 365);
+        });
+    }
+});
+
+function showTrackingCookie() {
+    jQuery("#trackingCookieMore").remove();
+    var template = $('.cookie-block').html();
+    jQuery("body").append(template);
+}
+
+function showTrackingCookieMore() {
+    jQuery("#trackingCookie").remove();
+    jQuery("body").append(
+        ""
+    );
+}
+
+function positionMessage() {
+    var trackingCookieHeight = 150;
+    var trackingCookieWidth = 935;
+    // set trackingCookie parameters
+    // set width
+    jQuery("#trackingCookie").css("width", trackingCookieWidth);
+    // set height
+    jQuery("#trackingCookie").css("height", trackingCookieHeight);
+    // set left
+    var left1 = (jQuery(window).width() - trackingCookieWidth) / 2;
+    if (jQuery(window).width() < trackingCookieWidth) left1 = 0;
+    jQuery("#trackingCookie").css("left", left1);
+    // set top
+    /*var scrollTop1 = jQuery(window).scrollTop();
+    var top1 = scrollTop1 + (jQuery(window).height() - jQuery("#trackingCookie").height());*/
+    jQuery("#trackingCookie").css("bottom", 0);
+    // set trackingCookieMore parameters
+    jQuery("#trackingCookieMore").css("bottom", 0);
+    jQuery("#trackingCookieMore").css("width", trackingCookieWidth);
+    jQuery("#trackingCookieMore").css("left", left1);
+}
+
+function setCookie(c_name, value, exdays) {
+    var exdate = new Date();
+    exdate.setDate(exdate.getDate() + exdays);
+    var c_value = escape(value) + ((exdays == null) ? "" : "; expires=" + exdate.toUTCString());
+    document.cookie = c_name + "=" + c_value;
+}
+
+function getCookie(c_name) {
+    var i, x, y, ARRcookies = document.cookie.split(";");
+    for (i = 0; i < ARRcookies.length; i++) {
+        x = ARRcookies[i].substr(0, ARRcookies[i].indexOf("="));
+        y = ARRcookies[i].substr(ARRcookies[i].indexOf("=") + 1);
+        x = x.replace(/^\s+|\s+$/g, "");
+        if (x == c_name) {
+            return unescape(y);
+        }
+    }
+}
+
+function checkCookie(c_name) {
+    var cookieName = getCookie(c_name);
+    if (cookieName != null && cookieName != "") {
+        return false;
+    } else {
+        return true;
+    }
+}
+
+/*! End of Tracking cookie management script */

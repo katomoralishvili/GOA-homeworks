@@ -1,0 +1,4 @@
+var initialCoordinates = {
+    lat: 41.680790,
+    lng: 44.957149
+};

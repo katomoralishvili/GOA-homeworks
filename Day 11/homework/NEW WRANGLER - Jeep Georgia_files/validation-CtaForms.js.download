@@ -1,0 +1,124 @@
+/* escludo la possibilit� di fare paste in campo conferma email
+window.onload = function() {
+ var myInput = document.getElementsByName('email_c');
+ myInput.onpaste = function(e) {
+   e.preventDefault();
+ }
+}
+*/
+
+jQuery(document).ready(function () {
+    jQuery('input[name=email_c]').bind("cut copy paste", function (e) {
+        e.preventDefault();
+    });
+});
+
+
+function controlla_CTAform() {
+    var tipoform = document.getElementById('CtaForm').type.value
+    var errore = false;
+
+    //campi comuni ai form CTA
+    var fname = "";
+    fname = $.trim(document.getElementById('CtaForm').fname.value)
+    var trad_fname = $.trim(document.getElementById('CtaForm').trad_fname.value)
+    var lname = "";
+    lname = $.trim(document.getElementById('CtaForm').lname.value)
+    var trad_lname = $.trim(document.getElementById('CtaForm').trad_lname.value)
+    var email = "";
+    email = $.trim(document.getElementById('CtaForm').email.value)
+    var trad_email = $.trim(document.getElementById('CtaForm').trad_email.value)
+    var email_c = "";
+    email_c = $.trim(document.getElementById('CtaForm').email_c.value)
+    var trad_email_c = $.trim(document.getElementById('CtaForm').trad_email_c.value)
+    var phone = "";
+    phone = $.trim(document.getElementById('CtaForm').phone.value)
+    var trad_phone = $.trim(document.getElementById('CtaForm').trad_phone.value)
+
+
+    if (document.getElementsByName('privacy').length) {
+        var privacy = document.getElementById('CtaForm').privacy.checked  //la privacy ci sar� in tutti i form e deve essere spillata
+    } else {
+        var privacy = true;
+    }
+
+    var controllo_base = (fname == "" || fname == trad_fname ||
+        lname == "" || lname == trad_lname ||
+        email == "" || email == trad_email ||
+        email_c != email || email_c == trad_email_c ||
+        phone == "" || phone == trad_phone || !privacy
+    )
+
+    var model = ""
+
+    if (tipoform == 'CONTACTUS') {
+        var comment_orig = "";  //c'� solo per il ContactUs
+        comment_orig = document.getElementById('CtaForm').comment.value
+        comment_tmp = $.trim(comment_orig.replace('\n', ''))
+
+        var trad_comment = $.trim(document.getElementById('CtaForm').trad_comment.value)
+
+        //console.log("comm=" + comment_tmp);
+        if (controllo_base || comment_tmp == "" || comment_tmp == trad_comment) {
+            errore = true;
+        }
+    } else {
+        //questi campi sono presenti in ttuti i form tranne quello del COntactUs
+        //(campi specifici per alcuni form)
+        var address = "";
+        address = $.trim(document.getElementById('CtaForm').address.value)
+        var postcode = "";
+        postcode = $.trim(document.getElementById('CtaForm').postcode.value)
+        var city = "";
+        city = $.trim(document.getElementById('CtaForm').city.value)
+        model = document.getElementById('model').value
+        var trad_address = $.trim(document.getElementById('CtaForm').trad_address.value)
+        var trad_postcode = $.trim(document.getElementById('CtaForm').trad_postcode.value)
+        var trad_city = $.trim(document.getElementById('CtaForm').trad_city.value)
+
+        //gli altri form hanno gli stessi campi se li si analizza, quindi il controllo sugli errori � unificato
+        if (controllo_base ||
+            address == "" || address == trad_address ||
+            city == "" || city == trad_city || model == ""
+        ) {
+            errore = true;
+        }
+    }
+
+
+    if (!errore) {
+        if (model != '') {
+            document.getElementById('modelname_selected').value = model
+        }
+
+        var errore2 = false;
+
+        // aggiungo check per campi lettere e numeri (citt�, nome e cognome no numeri, tel no lettere)
+        if (/[\d]/.test(fname) || /[\d]/.test(lname)) {
+            alert(document.getElementById('CtaForm').errortext2.value);
+            errore2 = true;
+        }
+        // var regex = /^([0-9a-zA-Z]([-_\\.]*[0-9a-zA-Z]+)*)@([0-9a-zA-Z]([-_\\.]*[0-9a-zA-Z]+)*)[\\.]([a-zA-Z]{2,9})$/;
+        var regex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+        if (!regex.test(email) && !errore2) {
+            alert(document.getElementById('CtaForm').errortext5.value);
+            errore2 = true;
+        }
+        if (/[\d]/.test(city) && !errore2) {
+            alert(document.getElementById('CtaForm').errortext3.value);
+            errore2 = true;
+        }
+        if (isNaN(phone) && !errore2) {
+            alert(document.getElementById('CtaForm').errortext4.value);
+            errore2 = true;
+        }
+
+        if (!errore2) {
+            document.getElementById('CtaForm').submit();
+            //tutti i form delle 4 pagine interessate hanno questo ID, d'ora in avanti., per poter individuarlo con semplicita
+        }
+    } else {
+        alert(document.getElementById('CtaForm').errortext.value)
+    }
+
+}

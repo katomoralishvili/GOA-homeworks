@@ -1,0 +1,450 @@
+var ctaOpen = false;
+$(window).on("resize", function () {
+    var timeout = null;
+    if (timeout) clearTimeout(timeout);
+    timeout = setTimeout(function () {
+        resizeDotsHp();
+    }, 250);
+
+});
+
+$(window).on("load", function () {
+    var timeout = null;
+    if (timeout) clearTimeout(timeout);
+    timeout = setTimeout(function () {
+        resizeDotsHp();
+    }, 250);
+
+});
+
+$(window).on('lazyloaded', function() {
+    $(document).foundation('reflow');
+});
+
+$(window).on("scroll", function () {
+    if (ctaOpen) {
+        $(".cta ul").find('.cta-label').hide()
+    }
+});
+
+
+function resizeDotsHp() {
+    if ($(".page-template-page-homepage").length) {
+        if ($(window).width() < 1025) {
+            $("#main-slider .owl-dots").css({
+                top: $(".slider-mobile .desc").position().top + "px"
+            });
+        }
+        if ($(window).width() > 1024) {
+            $("#main-slider .owl-dots").attr("style", "top: 95% !important")
+        }
+    }
+
+}
+
+FiatObj.app = (function () {
+    'use strict';
+    var sliderHomepage = function () {
+        var hpCarousel = $("#main-slider").owlCarousel({
+            navigation: true, // Show next and prev buttons
+            autoHeight: true,
+            singleItem: true,
+            autoplayHoverPause: true,
+            autoplay: true,
+            lazyLoad: true,
+            stagePadding: 0,
+            dots: true,
+            responsive: true,
+            items: 1,
+            loop: true,
+            // autoplayTimeout: 5000,
+        });
+
+
+        hpCarousel.on('change.owl.carousel', function (e) {
+            setTimeout(function () {
+                var videoInCarousel = $("#main-slider").find(".owl-item.active video");
+
+                if (videoInCarousel.length) {
+                    console.log("Video trovato");
+                    hpCarousel.trigger('stop.owl.autoplay');
+                    videoInCarousel.trigger('play');
+                    videoInCarousel.on("ended", function () {
+                        hpCarousel.trigger('play.owl.autoplay');
+                    })
+                }
+            }, 200)
+
+        });
+
+        $(".loader-main-slider").hide();
+
+    };
+
+    var subMenu = function () {
+        $('.model-link').click(function (event) {
+            event.preventDefault();
+            console.log($(this).hasClass('open'));
+            if ($(this).closest('.menu-item').hasClass('open')) {
+                $(this).closest('.menu-item').removeClass('open');
+                $('#models-sub-menu').hide();
+            } else {
+                $(this).closest('.menu-item').addClass('open');
+                $('#models-sub-menu').css({
+                    "display": "flex"
+                });
+            }
+        });
+    };
+
+    var sliderModel = function () {
+        $("#model-carousel").owlCarousel({
+            navigation: true, // Show next and prev buttons
+            autoplayTimeout: 300,
+            autoPlay: false,
+            items: 1,
+            singleItem: true,
+            navigationText: ['<i class="fa fa-angle-left fa-3x"></i>', '<i class="fa fa-angle-right fa-3x"></i>'],
+            addClassActive: true,
+        });
+    };
+
+    setTimeout(function () {
+        console.log("Caricamento plugin in corso...");
+        $("#heroblock .images-hero").owlCarousel({
+            margin: 10,
+            nav: false,
+            items: 4,
+            stagePadding: 0,
+            dots: false,
+            responsive: {
+                0: {
+                    items: 2,
+                    loop: true,
+                    center: true,
+                },
+                1024: {
+                    items: 4,
+                }
+            }
+        });
+    }, 1000);
+
+
+    var hpBottomCarousel = function () {
+        $("#hp-bottom-carousel").owlCarousel({
+            navigation: true, // Show next and prev buttons
+            autoplayTimeout: 300,
+            autoPlay: false,
+            items: 1,
+            singleItem: true,
+            navigationText: ['<i class="fa fa-angle-left fa-3x"></i>', '<i class="fa fa-angle-right fa-3x"></i>'],
+            addClassActive: true,
+        });
+    };
+
+    var scrollTopHp = function () {
+        $('a[href^="#centralBlockHp"]').on('click', function (e) {
+            e.preventDefault();
+
+            var target = this.hash;
+            var $target = $(target);
+
+            $('html, body').stop().animate({
+                'scrollTop': $target.offset().top
+            }, 500, 'swing', function () {
+                window.location.hash = target;
+            });
+        });
+    };
+
+    var showCta = function () {
+        $('.cta ul').mouseover(function () {
+            $(this).find('.cta-label').show();
+        });
+        ctaOpen = true;
+    };
+
+    var openAllCta = function () {
+        $(".page-template-page-homepage").addClass("all-cta-opened").delay(3000).queue(function () {
+            $(this).removeClass("all-cta-opened");
+        });
+    };
+
+    var closeMobileMenu = function () {
+
+        $(window).resize(function () {
+            if ($(window).innerWidth() > 820) {
+                $('.right-off-canvas-menu').foundation('offcanvas', 'hide', 'move-left');
+            }
+        });
+    };
+
+    var modelSubmenu = function () {
+        var totalWidth = 0;
+
+        $('.model-submenu ul li').each(function (index) {
+            totalWidth += parseInt($(this).outerWidth(), 10);
+        });
+
+        function calcoloLarghezzaUl() {
+            jQuery('.model-submenu ul').css('width', totalWidth + 1);
+            var next;
+            next = jQuery('.model-submenu ul li').parent().find(".active");
+            if (next.offset()) {
+                jQuery(".model-submenu").scrollLeft(next.offset().left);
+            }
+        }
+
+        function classiPerScroll() {
+            $(".model-submenu").addClass('toScroll');
+
+        }
+
+        $(window).resize(function () {
+            if ($(window).innerWidth() <= totalWidth) {
+                calcoloLarghezzaUl();
+                classiPerScroll();
+            } else {
+                $(".model-submenu").removeClass('toScroll');
+                $('.model-submenu ul').css('width', 'auto');
+            }
+        });
+        $(document).ready(function () {
+
+            var totalWidth = 0;
+
+            $('.model-submenu ul li').each(function (index) {
+                totalWidth += parseInt($(this).outerWidth(), 10);
+            });
+            if ($(window).innerWidth() <= totalWidth) {
+
+                classiPerScroll();
+                calcoloLarghezzaUl();
+            }
+            if ($(window).innerWidth() > totalWidth) {
+                $(".model-submenu").removeClass('toScroll');
+                $('.model-submenu ul').css('width', 'auto');
+            }
+        });
+
+
+        $(".custom-block.test-drive-block form#CtaForm input[type=text], .custom-block.request-estimate-block form#CtaForm input[type=text], .custom-block.brochure-block form#CtaForm input[type=text], .contact-block form#CtaForm input[type=text]")
+            .each(function (input) {
+                var self = $(this);
+                $(this).blur(function () {
+                    var inputValue = self.val();
+                    if (inputValue !== self.next().text()) {
+                        //Have value
+                        self.next().addClass("goUp");
+                        self.css("color", "black")
+
+                    } else {
+                        //Not have value
+                        self.next().removeClass("goUp");
+                        self.css("color", "transparent")
+
+                    }
+                });
+
+                $(this).focus(function () {
+                    self.next().addClass("goUp")
+                })
+
+                self.next().click(function () {
+                    self.trigger("focus")
+                })
+
+            })
+    };
+
+    var mobileFlag = function () {
+        if ($('#lang_sel').length != 0) {
+            console.log("Language selector loaded")
+            $('#lang_sel').remove();
+
+        }
+        ;
+    };
+
+
+    var accessibility = function () {
+        $(".accessibility").click(function () {
+            $(this).toggleClass("opened");
+        });
+    };
+
+    var greyscale = function () {
+        // Check if localStorage is supported
+        if ('localStorage' in window && typeof localStorage == 'object') {
+            $(document).ready(function () {
+                // Set the class if greyscale is set
+                // Note that localStorage saves everything as strings
+                if (localStorage["greyscale"] == "1") {
+                    $('body').addClass('greyscale');
+                }
+                // Register click listener for the button
+                $('#greyscale').click(function () {
+                    $('body').removeClass('greyscale');
+                    localStorage["greyscale"] = "0";
+                    $('body').removeClass('invertcolor');
+                    localStorage["invertcolor"] = "0";
+                    // Toggle greyscale on and off
+                    if (localStorage["greyscale"] != "1") {
+                        $('body').addClass('greyscale');
+                        localStorage["greyscale"] = "1";
+                    } else {
+                        $('body').removeClass('greyscale');
+                        localStorage["greyscale"] = "0";
+                    }
+                }); // - button click
+            }); // - doc ready
+        }
+    };
+
+    var invertcolor = function () {
+        // Check if localStorage is supported
+        if ('localStorage' in window && typeof localStorage == 'object') {
+            $(document).ready(function () {
+                // Set the class if greyscale is set
+                // Note that localStorage saves everything as strings
+                if (localStorage["invertcolor"] == "1") {
+                    $('body').addClass('invertcolor');
+                }
+                // Register click listener for the button
+                $('#invertcolor').click(function () {
+                    $('body').removeClass('greyscale');
+                    localStorage["greyscale"] = "0";
+                    $('body').removeClass('invertcolor');
+                    localStorage["invertcolor"] = "0";
+                    // Toggle greyscale on and off
+                    if (localStorage["invertcolor"] != "1") {
+                        $('body').addClass('invertcolor');
+                        localStorage["invertcolor"] = "1";
+                    } else {
+                        $('body').removeClass('invertcolor');
+                        localStorage["invertcolor"] = "0";
+                    }
+                }); // - button click
+            }); // - doc ready
+        }
+    };
+
+    var resetaccessiblity = function () {
+        $("#resetaccessiblity").click(function () {
+            $('body').removeClass('greyscale');
+            localStorage["greyscale"] = "0";
+            $('body').removeClass('invertcolor');
+            localStorage["invertcolor"] = "0";
+        });
+    };
+
+    /*var FontAccessiblity = function(){
+        $('#incfont').click(function(){
+            var curSize= parseInt($('*').css('font-size')) + 2;
+            if(curSize<=20){
+                $('*').css('font-size', curSize);
+            }
+        });
+        $('#decfont').click(function(){
+            if(curSize>=12){
+                var curSize= parseInt($('*').css('font-size')) - 2;
+                $('*').css('font-size', curSize);
+            }
+        });
+    };*/
+
+    var FontAccessiblity = function () {
+        $('#incfont').click(function () {
+            var curSize = parseInt($('.custom-block p').css('font-size')) + 2;
+            if (curSize <= 20) {
+                $('.custom-block p').css('font-size', curSize);
+            }
+            if (curSize <= 20) {
+                $('.custom-block ul').css('font-size', curSize);
+            }
+            if (curSize <= 20) {
+                $('.custom-block td').css('font-size', curSize);
+            }
+            if (curSize <= 20) {
+                $('.footer-wrapper ul').css('font-size', curSize);
+            }
+            if (curSize <= 20) {
+                $('#incfont').css('font-size', curSize);
+            }
+            if (curSize <= 20) {
+                $('#decfont').css('font-size', curSize);
+            }
+        });
+        $('#decfont').click(function () {
+            var curSize = parseInt($('.custom-block p').css('font-size')) - 2;
+            if (curSize >= 12) {
+                $('.custom-block p').css('font-size', curSize);
+            }
+            if (curSize >= 12) {
+                $('.custom-block ul').css('font-size', curSize);
+            }
+            if (curSize >= 12) {
+                $('.custom-block td').css('font-size', curSize);
+            }
+            if (curSize >= 12) {
+                $('.footer-wrapper ul').css('font-size', curSize);
+            }
+            if (curSize >= 12) {
+                $('#decfont').css('font-size', curSize);
+            }
+            if (curSize >= 12) {
+                $('#incfont').css('font-size', curSize);
+            }
+        });
+    };
+
+    var TabIndexAccessiblity = function () {
+        var tabindex = 3;
+        if ($('.he').length) {
+            $('aside.left-off-canvas-menu a').attr('tabindex', '-9');
+
+            $('nav.top-bar a').attr('tabindex', '1');
+            $('section.top-bar-section.menu-wrapper a').attr('tabindex', tabindex);
+            $('#models-sub-menu a').attr('tabindex', tabindex - 1);
+            $('.model-link a').attr('tabindex', tabindex - 1);
+        }
+
+    };
+
+    var fixAutocompleteForms = function () {
+        $("#CtaForm").find("input")
+            .attr('autocomplete', 'new-password');
+    };
+
+    var greencode = function () {
+        $("#greencode").click(function () {
+            $(this).parent().find('div').slideToggle("slow");
+        });
+    };
+
+    return {
+        init: function () {
+            //console.log('init app');
+            subMenu();
+            sliderHomepage();
+            openAllCta();
+            sliderModel();
+            scrollTopHp();
+            showCta();
+            hpBottomCarousel();
+            closeMobileMenu();
+            mobileFlag();
+            modelSubmenu();
+            accessibility();
+            greyscale();
+            invertcolor();
+            resetaccessiblity();
+            FontAccessiblity();
+            TabIndexAccessiblity();
+            greencode();
+            fixAutocompleteForms();
+        }
+    }
+
+})();

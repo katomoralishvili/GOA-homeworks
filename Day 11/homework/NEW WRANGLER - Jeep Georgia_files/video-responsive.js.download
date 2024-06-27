@@ -1,0 +1,36 @@
+jQuery(document).ready(function () {
+
+    var $allVideos = jQuery("iframe[src^='//player.vimeo.com'], iframe[src^='//www.youtube.com'], object, embed"),
+        $fluidEl = jQuery("figure");
+    //console.log($fluidEl);
+
+    $allVideos.each(function () {
+
+        jQuery(this)
+        // jQuery .data does not work on object/embed elements
+            .attr('data-aspectRatio', this.height / this.width)
+            .removeAttr('height')
+            .removeAttr('width');
+
+    });
+
+    jQuery(window).resize(function () {
+
+        if ($fluidEl) {
+            var newWidth = $fluidEl.width();
+            //alert(newWidth);
+            //console.log("NW=" + newWidth);
+            $allVideos.each(function () {
+
+                var $el = jQuery(this);
+                $el
+                    .width(newWidth)
+                    .height(newWidth * $el.attr('data-aspectRatio'));
+
+            });
+        }
+
+    }).resize();
+
+});
+	

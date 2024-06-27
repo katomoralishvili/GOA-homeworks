@@ -1,0 +1,77 @@
+jQuery(document).ready(function () {
+    var cookieName = 'cookie_consent';
+    var cookie_set = jQuery.cookie(cookieName);
+    var cookie_not_set = sessionStorage.cookie_not_set;
+
+    if (cookie_set || sessionStorage.cookie_not_set) {
+        bannerVisibility(false);
+    } else {
+        bannerVisibility(true);
+    }
+    if (cookie_set && cookie_set != 'false') {
+        caricaScript();
+    }
+
+    jQuery('body').click(function (e) {
+        caricaScriptAction(e);
+    });
+
+
+    jQuery(window).scroll(function (e) {
+        caricaScriptAction(e);
+    });
+
+
+    function caricaScriptAction(e) {
+
+
+        if (jQuery(e.target).attr('id') == 'dismiss' ||
+            (jQuery(e.target).hasClass('dismiss-cookie') && jQuery('#dismiss', e.target))) {
+            jQuery("#trackingCookie").addClass('hide');
+            jQuery("#script_ga, #script_as, #script_tm").remove();
+            jQuery.cookie("cookie_consent", false, {path: '/', expires: 390});
+        } else {
+            if (typeof $.cookie('cookie_consent') === 'undefined') {
+                jQuery("#trackingCookie").addClass('hide');
+                delete sessionStorage.cookie_not_set;
+                jQuery.cookie("cookie_consent", true, {path: '/', expires: 390});
+                window.location.reload(true);
+            }
+        }
+    }
+
+});
+
+function bannerVisibility(visibility) {
+
+    if (visibility == true) {
+        jQuery("#trackingCookie").removeClass('hide');
+    } else {
+        jQuery("#trackingCookie").addClass('hide');
+    }
+}
+
+function caricaScript() {
+
+    if (jQuery("#script_as").data('script') != '') {
+        var s = document.createElement("script");
+        s.src = jQuery("#script_as").data('script');
+
+        s.onload = function () {
+            var bscript = document.createElement("script");
+            bscript.text = '_satellite.pageBottom();';
+            $('body').append(bscript);
+        };
+        document.getElementsByTagName('head')[0].appendChild(s);
+
+    }
+
+    var tm = jQuery("#script_tm").attr('data-script');
+    var tmFunc = new Function(tm);
+    tmFunc.call(this);
+
+    var ga = jQuery("#script_ga").attr('data-script');
+    var gaFunc = new Function(ga);
+    gaFunc.call(this);
+
+}

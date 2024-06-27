@@ -1,0 +1,116 @@
+// Main app obj
+var FiatObj = {
+    modules: {},
+    app: {}
+};
+
+require.config({
+    waitSeconds: 300,
+    shim: {
+        "jquery": {
+            "deps": []
+        },
+        "foundation": {
+            "deps": ['jquery']
+        },
+        "jquerycookie": {
+            "deps": ['jquery']
+        }
+        , "app": {
+            "deps": ['jquery', 'foundation']
+        },
+        "reveal": {
+            "deps": ['foundation']
+        },
+        "owlCarousel": {
+            "deps": ['jquery']
+        },
+        "fastclick": {
+            "deps": ['jquery', 'foundation']
+        },
+        "equalizer": {
+            "deps": ['jquery', 'foundation']
+        },
+        "topbar": {
+            "deps": ['jquery', 'foundation']
+        },
+        "cookie": {
+            "deps": ['jquery', 'jquerycookie']
+        },
+        "cookie_new": {
+            "deps": ['jquery', 'jquerycookie']
+        }
+    },
+    paths: {
+        jquery: "jquery.min",
+        jquerycookie: "jquery.cookie",
+        app: "app",
+        foundation: "foundation",
+        reveal: "vendor/foundation/foundation.reveal",
+        owlCarousel: "vendor/owl.carousel",
+        fastclick: "vendor/fastclick",
+        jqueryValidation: "jquery-validation/jquery.validate.min",
+        equalizer: "vendor/foundation/foundation.equalizer",
+        topbar: "vendor/foundation/foundation.topbar",
+        cookie: "TrackingCookie",
+        cookie_new: "cookie_consent"
+    }
+});
+
+
+requirejs(['jquery', 'foundation', 'jquerycookie', 'owlCarousel', 'app', 'reveal', 'fastclick', 'equalizer', 'topbar', 'cookie', 'cookie_new'], function ($) {
+    //console.log('loaded');
+    $(document).ready(function () {
+        setTimeout(function () {
+            $(document).foundation();
+            setTimeout(function () {
+                FiatObj.app.init();
+            }, 200)
+
+
+            /*LOAD ADDITIONAL MODULES*/
+            var modules = $('div.module-deps');
+            if (modules.length > 0) {
+                var toLoadModules = [];
+                var moduleNames = [];
+                $(modules).each(function () {
+                    var _thisModuleName = $(this).attr('data-module');
+                    var _thisModulePath = jsPath + '/modules/' + _thisModuleName + '.js';
+
+                    if ($.inArray(_thisModulePath, toLoadModules) == -1) {
+                        toLoadModules.push(_thisModulePath);
+                        moduleNames.push(_thisModuleName);
+                    }
+
+                });
+                //console.log(toLoadModules);
+                //LOAD
+                require(toLoadModules, function () {
+                    //INIT MODULES
+                    for (var i = 0; i < moduleNames.length; i++) {
+                        FiatObj.modules[moduleNames[i]].init();
+                    }
+                });
+            }
+
+            if ($('html.ie8').length > 0) {
+                jQuery.browser = {
+                    msie: true,
+                    version: '8.0'
+                };
+            } else if ($('html.ie9').length > 0) {
+                jQuery.browser = {
+                    msie: true,
+                    version: '9.0'
+                };
+            } else {
+                jQuery.browser = {
+                    msie: false,
+                    version: ''
+                }
+            }
+        }, 200)
+        //init app from app.js
+
+    });
+});
